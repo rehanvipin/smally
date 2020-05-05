@@ -1,0 +1,6 @@
+lena/
+*.mp4
+*.png
+*.jpg
+starter.py
+.vscode/
