@@ -17,8 +17,8 @@ Not really, they don't technically work, as of now the output files also contain
 Although the mp4 format somehow already does this when it receives the processed file.  
 
 ### What's left?
-1. Actual compression, maybe with a new format. Need a fancy new decoder too. This might be to send files over networks to networks.
-2. Parallelize? A lot of the operations can be parallelized, maybe with CPU threads, maybe with a GPU.
+1. Actual compression, maybe with a new format. Need a fancy new decoder too. Can save network bandwidth 10/10.  
+2. Parallelize? A lot of the operations can be parallelized, maybe with CPU threads, maybe with a GPU.  
 3. Clean up the use of external libraries, try to maximise each one's functionality.
 
 ## Actual usage
