@@ -28,7 +28,7 @@ def pixelate_image(image, percent):
     return U.dot(sigma.dot(V_t))  
 
 def color_worker(frame, percent, color, allframes):
-    print("Started work on",color)
+    # print("Started work on",color)
     processed = pixelate_image(frame, percent)
     allframes[color] = processed
 
@@ -46,7 +46,7 @@ def color_pixelate_parallel(frame, percent):
     manager = multiprocessing.Manager()
     allframes = manager.dict()
     for f, col in ((b,'b'), (g,'g'), (r,'r')):
-        p = multiprocessing.Process(target=pixelate_image, args=(f, percent, col, allframes))
+        p = multiprocessing.Process(target=color_worker, args=(f, percent, col, allframes))
         jobs.append(p)
         p.start()
     for process in jobs:
@@ -55,10 +55,6 @@ def color_pixelate_parallel(frame, percent):
     g = allframes['g']
     r = allframes['r']
     return cv2.merge((b, g, r))
-"""
-Initial testing with one image, works well in pixelating the images, 
-TODO: need to work on saving only the necessary information
-"""
 
 def get_specs(read_cap):
     # Get specifics of video
@@ -84,8 +80,8 @@ def process_video(filename, output_file='1999.mp4'):
         if ret_bool:
             frame_count += 1
             gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            fixed_frame = pixelate_image(gray_frame, BEST_PERCENT).astype(np.uint8)
-            # fixed_frame = color_pixelate_parallel(frame, BEST_PERCENT).astype(np.uint8)
+            # fixed_frame = pixelate_image(gray_frame, BEST_PERCENT).astype(np.uint8)
+            fixed_frame = color_pixelate_parallel(frame, BEST_PERCENT).astype(np.uint8)
             writer.append_data(fixed_frame)
             pro_bar.update(1)
     pro_bar.close()
@@ -95,14 +91,16 @@ def process_video(filename, output_file='1999.mp4'):
 
 
 def main():
-    if(len(sys.argv) <= 2):
-        return prin("Usage: rawed.py [i|v] filename")
+    if(len(sys.argv) <= 3):
+        return print("Usage: compress.py [i|v] [input filename] [output filename]\
+                \n       i -> image, v -> video")
     filename = sys.argv[2]
+    output_filename = sys.argv[3]
     if sys.argv[1] == 'i':
-        process_image(filename)
+        process_image(filename, output_filename)
         print("output file at:",'result.png')
     elif sys.argv[1] == 'v':
-        process_video(filename)
+        process_video(filename, output_filename)
         print("output file at:",'1999.mp4')
     else:
         print("Invalid use")
